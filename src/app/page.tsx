@@ -17,7 +17,7 @@ export default function Home() {
           </p>
         </div>
       </div> */}
-      <div className="w-full p-2">
+      <div className="w-full p-2 md:p-4 ">
         <div className="relative w-full  h-96 md:h-[400px] xl:h-[600px] rounded-lg">
           <header className=" z-20 rounded-lg absolute h-full flex flex-col justify-evenly backdrop-blur-sm top-0 bottom-0 left-0 right-0 p-6 py-10 text-center text-white">
             <h1 className="text-5xl font-bold">Assisi Szent Ferenc</h1>

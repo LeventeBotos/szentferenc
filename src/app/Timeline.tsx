@@ -20,14 +20,12 @@ let initialTimelineEvents: TimelineEvent[] = [
     event: "Szent Ferenc születése",
     details: "Assisiben született, gazdag család sarja.",
   },
-
   {
     year: 1209,
     event: "Ferences Rend alapítása",
     details:
       "Ferenc megalapította a Ferences Rendet, a szegénység és egyszerűség jegyében.",
   },
-
   {
     year: 1226,
     event: "Halála",
@@ -44,40 +42,33 @@ let initialTimelineEvents: TimelineEvent[] = [
     event: "Stigmák megjelenése",
     details: "Ferenc teste Krisztus szenvedésének jeleit hordozta.",
   },
-  // Add more events if needed
 ];
 
 export function Timeline() {
   const [events, setEvents] = useState<TimelineEvent[]>(initialTimelineEvents);
   const [isCorrectOrder, setIsCorrectOrder] = useState<boolean | null>(null);
 
-  const handleDragStart = (
-    event: React.DragEvent<HTMLDivElement>,
-    index: number
-  ) => {
-    event.dataTransfer.setData("dragIndex", index.toString());
-  };
+  // Move event up or down
+  const moveEvent = (index: number, direction: "up" | "down") => {
+    const newEvents = [...events];
+    const moveIndex = direction === "up" ? index - 1 : index + 1;
 
-  const handleDrop = (
-    event: React.DragEvent<HTMLDivElement>,
-    dropIndex: number
-  ) => {
-    const dragIndex = parseInt(event.dataTransfer.getData("dragIndex"));
-    const reorderedEvents = [...events];
-    const [movedEvent] = reorderedEvents.splice(dragIndex, 1);
-    reorderedEvents.splice(dropIndex, 0, movedEvent);
-    setEvents(reorderedEvents);
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
+    if (moveIndex >= 0 && moveIndex < newEvents.length) {
+      const temp = newEvents[index];
+      newEvents[index] = newEvents[moveIndex];
+      newEvents[moveIndex] = temp;
+      setEvents(newEvents);
+    }
   };
 
   // Verify if the events are in the correct chronological order
   const verifyOrder = () => {
-    const isCorrect = events.every((event, index) => {
-      return event.year === initialTimelineEvents[index].year;
-    });
+    const correctOrder = [...initialTimelineEvents].sort(
+      (a, b) => a.year - b.year
+    );
+    const isCorrect = events.every(
+      (event, index) => event.year === correctOrder[index].year
+    );
     setIsCorrectOrder(isCorrect);
   };
 
@@ -87,14 +78,37 @@ export function Timeline() {
         {events.map((event, index) => (
           <div
             key={event.year}
-            className="shadow-md p-4 rounded-lg text-black/70 border border-black border-opacity-10  cursor-pointer hover:border-black/100"
-            draggable
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDrop={(e) => handleDrop(e, index)}
-            onDragOver={handleDragOver}
+            className="shadow-md p-4 rounded-lg text-black/70 border border-black border-opacity-10  cursor-pointer hover:border-black/100 relative flex justify-between items-center"
           >
-            <h3 className="text-xl font-semibold">{event.event}</h3>
-            <p className="mt-2">{event.details}</p>
+            <div>
+              <h3 className="text-xl font-semibold">{event.event}</h3>
+              <p className="mt-2">{event.details}</p>
+            </div>
+            {/* Mobile-only arrows */}
+            <div className="space-y-1  flex flex-col ml-4">
+              <button
+                onClick={() => moveEvent(index, "up")}
+                className={`bg-gray-300 rounded p-1 ${
+                  index === 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-400"
+                }`}
+                disabled={index === 0}
+              >
+                ↑
+              </button>
+              <button
+                onClick={() => moveEvent(index, "down")}
+                className={`bg-gray-300 rounded p-1 ${
+                  index === events.length - 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-400"
+                }`}
+                disabled={index === events.length - 1}
+              >
+                ↓
+              </button>
+            </div>
           </div>
         ))}
       </div>
