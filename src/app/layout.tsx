@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Assisi Szent Ferenc",
-  description: "Készítette: Botos Levente",
+  description: "Készítette Botos Levente",
 };
 
 export default function RootLayout({
